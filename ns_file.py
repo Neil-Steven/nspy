@@ -3,14 +3,19 @@
 # @Time: 2021/6/29
 # @Author: Neil Steven
 
+import hashlib
 import mimetypes
 import shutil
+from typing import IO
 
 from ns_path import AnyPathLike, to_path
+from ns_string import fuzzy_format
 
 __all__ = [
     "copy", "move", "delete",
-    "get_content_type"
+    "get_content_type",
+    "smart_open",
+    "hash_file"
 ]
 
 
@@ -41,3 +46,41 @@ def delete(path: AnyPathLike):
 
 def get_content_type(path: AnyPathLike) -> str:
     return mimetypes.guess_type(path)[0]
+
+
+def smart_open(file, **kwargs) -> IO:
+    from chardet import UniversalDetector
+    with open(file, 'rb') as detect_handler:
+        detector = UniversalDetector()
+        for line in detect_handler.readlines():
+            detector.feed(line)
+            if detector.done:
+                break
+        detector.close()
+    kwargs["encoding"] = detector.result["encoding"]
+    return open(file, **kwargs)
+
+
+def hash_file(file_path: str, algorithm: str, chuck_size: int = 8192) -> str:
+    algorithm = fuzzy_format(algorithm)
+    match algorithm:
+        case "md5":
+            hash_method = hashlib.md5
+        case "sha1":
+            hash_method = hashlib.sha1
+        case "sha224":
+            hash_method = hashlib.sha224
+        case "sha256":
+            hash_method = hashlib.sha256
+        case "sha384":
+            hash_method = hashlib.sha384
+        case "sha512":
+            hash_method = hashlib.sha512
+        case _:
+            raise ValueError(f"Hash algorithm '{algorithm}' is unsupported!")
+
+    with open(file_path, 'rb') as f:
+        hash_obj = hash_method()
+        while chunk := f.read(chuck_size):
+            hash_obj.update(chunk)
+    return hash_obj.hexdigest()

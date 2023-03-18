@@ -11,6 +11,7 @@ from ns_common import is_empty
 
 __all__ = [
     "AnyPathLike", "MultiPathLike",
+    "join_path",
     "list_dir",
     "get_suffix",
     "is_file_like", "is_dir_like",
@@ -19,6 +20,13 @@ __all__ = [
 
 AnyPathLike = Union[str, os.PathLike]
 MultiPathLike = Union[AnyPathLike, List[AnyPathLike]]
+
+
+def join_path(base_path: str, *sub_path: str) -> str:
+    final_sub_path_list = []
+    for cur_sub_path in sub_path:
+        final_sub_path_list.append(cur_sub_path.removeprefix("/"))
+    return os.path.join(base_path, *final_sub_path_list)
 
 
 def list_dir(path: AnyPathLike, pattern: Optional[str] = None, *,

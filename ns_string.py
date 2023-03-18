@@ -3,11 +3,12 @@
 # @Time: 2021/7/6
 # @Author: Neil Steven
 
-import sys
+import re
 
 __all__ = [
     "is_same_version",
-    "remove_prefix", "remove_suffix"
+    "fuzzy_format",
+    "fuzzy_match"
 ]
 
 
@@ -30,17 +31,9 @@ def is_same_version(v1: str, v2: str) -> bool:
     return True
 
 
-# Reference https://www.python.org/dev/peps/pep-0616/
-def remove_prefix(self: str, prefix: str, /) -> str:
-    if sys.version_info >= (3, 9):
-        return self.removeprefix(prefix)
-    else:
-        return self[len(prefix):] if self.startswith(prefix) else self[:]
+def fuzzy_format(string: str, ignore_char_pattern: str = r"[\s\-_]", substitute: str = "") -> str:
+    return re.sub(ignore_char_pattern, substitute, string.lower())
 
 
-# Reference https://www.python.org/dev/peps/pep-0616/
-def remove_suffix(self: str, suffix: str, /) -> str:
-    if sys.version_info >= (3, 9):
-        return self.removesuffix(suffix)
-    else:
-        return self[:-len(suffix)] if suffix and self.endswith(suffix) else self[:]
+def fuzzy_match(string: str, other: str) -> bool:
+    return fuzzy_format(string) == fuzzy_format(other)
