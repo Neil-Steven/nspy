@@ -1,7 +1,7 @@
 """
-    NsPyLib by Neil Steven.
+    Simple Python lib by Neil Steven.
 
-    Support python level: 3.8+
+    Support Python version: 3.11+
 """
 
 __all__ = [
@@ -11,8 +11,10 @@ __all__ = [
     "ns_codec",
     "ns_common",
     "ns_console",
-	"ns_constant",
+    "ns_constant",
     "ns_datetime",
+    "ns_dict",
+    "ns_enum",
     "ns_error",
     "ns_file",
     "ns_logger",
@@ -21,5 +23,8 @@ __all__ = [
     "ns_regex",
     "ns_string",
     "ns_type",
-    "ns_unit"
+    "ns_unit",
+    "ns_url"
 ]
+
+__version__ = "0.2"
